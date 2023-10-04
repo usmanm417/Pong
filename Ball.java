@@ -1,13 +1,12 @@
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
-import javax.swing.*;  //responsible for the actual graphics of the game
 
 public class Ball extends Rectangle{
     
 Random random;
 int xVelocity;
 int yVelocity;
+int initialSpeed = 2;
 
     /**
      * Constructor for a ball
@@ -19,13 +18,13 @@ int yVelocity;
         if (randomXDirection == 0) {
             randomXDirection--;
         }
-        setXDirection(randomXDirection);
+        setXDirection(randomXDirection * initialSpeed);
         
         int randomYDirection = random.nextInt(2);
         if (randomYDirection == 0) {
             randomYDirection--;
         }
-        setYDirection(randomYDirection);
+        setYDirection(randomYDirection * initialSpeed);
 
     }
 
@@ -34,15 +33,23 @@ int yVelocity;
      * @param randomXDirection - random because the ball needs to go random after being hit
      */
     public void setXDirection(int randomXDirection) {
-
+        xVelocity = randomXDirection;
     }
 
     /**
-     * so the ball can move vertically across the screen
+     * So the ball can move vertically across the screen
      * @param randomYDirection - random because the ball needs to go random after being hit
      */
     public void setYDirection(int randomYDirection) {
-        
+        yVelocity = randomYDirection;
+    }
+
+    /**
+     * So we can move objects around the screen
+     */
+    public void move() {
+        x += xVelocity;
+        y += yVelocity;
     }
 
     /**
@@ -50,6 +57,7 @@ int yVelocity;
      * @param g - needed or javax.util
      */
     public void draw(Graphics g){
-
+        g.setColor(Color.white);
+        g.fillOval(x, y, height, width);
     }
 }

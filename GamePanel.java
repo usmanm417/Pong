@@ -14,6 +14,7 @@ public class GamePanel extends JPanel implements Runnable{
     static final int GAME_WIDTH = 1000;
     static final int GAME_HEIGHT = (int) (GAME_WIDTH * (0.55555));
     static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH, GAME_HEIGHT);
+    static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
     Thread gameThread;
@@ -45,7 +46,8 @@ public class GamePanel extends JPanel implements Runnable{
      */
     public void newBall() {
         random = new Random();
-        //ball = new Ball((GAME_WIDTH/2) - (BALL_DIAMETER/2), (GAME_HEIGHT/2) - (BALL_DIAMETER/2), BALL_DIAMETER, BALL_DIAMETER);
+        ball = new Ball((GAME_WIDTH/2) - (BALL_DIAMETER/2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER), BALL_DIAMETER, BALL_DIAMETER);
+
     }
 
     /**
@@ -74,6 +76,8 @@ public class GamePanel extends JPanel implements Runnable{
     public void draw(Graphics g) {
         paddle1.draw(g);
         paddle2.draw(g);
+        ball.draw(g);
+        score.draw(g);
     }
 
     /**
@@ -82,13 +86,48 @@ public class GamePanel extends JPanel implements Runnable{
     public void move() {
         paddle1.move();
         paddle2.move();
-        //ball.move();
+        ball.move();
     }
 
     /**
      * Check collision is the user hit the ball
      */
     public void checkCollision() {
+
+        //bounce the ball off the top and bottom of the window edges
+        if (ball.y <= 0) {
+            ball.setYDirection(-ball.yVelocity);
+        }
+        if (ball.y >= GAME_HEIGHT - BALL_DIAMETER) {
+            ball.setYDirection(-ball.yVelocity);
+        }
+
+        //bounces ball off paddles
+        if (ball.intersects(paddle1)) {
+            ball.xVelocity = Math.abs(ball.xVelocity);
+            ball.xVelocity++; //optional for difficulty
+            if (ball.yVelocity > 0) {
+                ball.yVelocity++; // optional for difficulty
+            }
+            else {
+                ball.yVelocity--;
+            }
+            ball.setXDirection(ball.xVelocity);
+            ball.setYDirection(ball.yVelocity);
+        }
+        if (ball.intersects(paddle2)) {
+            ball.xVelocity = Math.abs(ball.xVelocity);
+            ball.xVelocity++; //optional for difficulty
+            if (ball.yVelocity > 0) {
+                ball.yVelocity++; // optional for difficulty
+            }
+            else {
+                ball.yVelocity--;
+            }
+            ball.setXDirection(-ball.xVelocity);
+            ball.setYDirection(ball.yVelocity);
+        }
+
         //stop paddles at window edges
         if (paddle1.y <= 0) {
             paddle1.y = 0;
@@ -101,6 +140,20 @@ public class GamePanel extends JPanel implements Runnable{
         }
         if (paddle2.y >= (GAME_HEIGHT - PADDLE_HEIGHT)) {
             paddle2.y = GAME_HEIGHT - PADDLE_HEIGHT;
+        }
+
+        //give a player 1 point and creates new paddles and ball
+        if (ball.x <= 0) {
+            score.player2++;
+            newPaddles();
+            newBall();
+            System.out.println("Player 2: " + score.player2);
+        }
+        if (ball.x >= GAME_WIDTH - BALL_DIAMETER) {
+            score.player1++;
+            newPaddles();
+            newBall();
+            System.out.println("Player 1: " + score.player1);
         }
     }
 

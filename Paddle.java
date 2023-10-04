@@ -1,7 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;  //responsible for the actual graphics of the game
 
 public class Paddle extends Rectangle{
     
